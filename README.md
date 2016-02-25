@@ -107,6 +107,6 @@ void main()
    [MikroElektronika]: <http://www.mikroe.com/>
    [mikroe_logo]: <http://www.mikroe.com/img/designs/beta/logo_small.png>
    [Accel click]: <http://www.mikroe.com/click/accel/>
-   [accel_image]: <http://http://www.mikroe.com/img/development-tools/accessory-boards/click/accel/accel_click_main.png>
+   [accel_image]: <http://www.mikroe.com/img/development-tools/accessory-boards/click/accel/accel_click_main.png>
    [Accel Tutorial]: <http://learn.mikroe.com/>
    [Package Manager]: <http://www.mikroe.com/package-manager/>
