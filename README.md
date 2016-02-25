@@ -9,6 +9,7 @@
 ## Looking for a [tutorial?][Accel Tutorial]
 
 ### Example
+```
 void system_init( )
 {
     ...
@@ -97,7 +98,7 @@ void main()
         ....
         Delay_ms( 2500 );
     }
-}```
+}
 
 ```
 
