@@ -1,112 +1,122 @@
-![mikroe_logo] 
-# by [MikroElektronika]
-![accel_image] 
-# More information about [Accel click] is found here.
+![MikroE](http://www.mikroe.com/img/designs/beta/logo_small.png)
+
 ---
-## Installation
->If installing from package, [Package manager] required to install to your IDE.  
 
-## Looking for a [tutorial?][Accel Tutorial]
+# Accel Click
 
-### Example
-```
-void system_init( )
+- **CIC Prefix**  : ACCEL
+- **Author**      : Nenad Filipovic
+- **Verison**     : 1.0.0
+- **Date**        : Aug 2018.
+
+---
+
+### Software Support
+
+We provide a library for the Accel Click on our [LibStock](https://libstock.mikroe.com/projects/view/371/accel-click) 
+page, as well as a demo application (example), developed using MikroElektronika 
+[compilers](http://shop.mikroe.com/compilers). The demo can run on all the main 
+MikroElektronika [development boards](http://shop.mikroe.com/development-boards).
+
+**Library Description**
+
+The library covers all the necessary functions to control and read X, Y & Z axis value from Accel click.
+
+Key functions :
+
+- ``` void accel_Init()``` - Initializes function
+- ``` uint16_t accel_readXaxis() ``` - Function read X axis value
+- ``` uint16_t accel_readYaxis() ``` - Function read Y axis value
+- ``` uint16_t accel_readZaxis() ``` - Function read Z axis value
+
+**Examples Description**
+
+Description :
+
+The application is composed of three sections :
+
+- System Initialization - Initializes I2C.
+- Application Initialization - Initialization driver enable's - I2C. Check sensor ID and initialize Accel click.
+- Application Task - (code snippet) This is a example which demonstrates the use of Accel click board.
+     Measured coordinates (X,Y,Z) are being sent to the UART where you can track their changes.
+
+
+```.c
+
+void applicationTask()
 {
-    ...
-    
-    if( adxl345_init( ADXL345_MODE_SPI4, ADXL345_ADDR ) )
-    {
-        UART_Write_Text( "Error\r\n" );
-        while( 1 );
-    }
-    
-    adxl345_set_fifo_samples( 16 );
-    adxl345_set_fifo_mode( ADXL345_FIFO_STREAM );
-    adxl345_set_interrupt_level( true ); // Set interrupts to active low
-    adxl345_set_fifo_mode( ADXL345_FIFO_ENABLE );
+    int16_t valueX;
+    int16_t valueY;
+    int16_t valueZ;
+    uint8_t txtX[ 15 ];
+    uint8_t txtY[ 15 ];
+    uint8_t txtZ[ 15 ];
 
-    //set activity/ inactivity thresholds (0-255)
-    adxl345_set_activity_threshold( 75 );   //62.5mg per increment
-    adxl345_set_inactivity_threshold( 75 ); //62.5mg per increment
-    adxl345_set_inactivity_time( 10 );      // how many seconds of no activity is inactive?
+    valueX = accel_readXaxis();
+    valueY = accel_readYaxis();
+    valueZ = accel_readZaxis();
 
-    //look of activity movement on this axes true == on; false == off
-    adxl345_set_activity_x( true );
-    adxl345_set_activity_y( true );
-    adxl345_set_activity_z( true );
+    IntToStr( valueX, txtX );
+    IntToStr( valueY, txtY );
+    IntToStr( valueZ, txtZ );
 
-    //look of tap movement on this axes true == on; false == off
-    adxl345_set_tap_detection_on_x( false );
-    adxl345_set_tap_detection_on_y( false );
-    adxl345_set_tap_detection_on_z( true );
+    mikrobus_logWrite( " Axis X :", _LOG_TEXT );
+    mikrobus_logWrite( txtX, _LOG_LINE );
 
-    //set values for what is a tap, and what is a double tap (0-255)
-    adxl345_set_tap_threshold( 10 );     //62.5mg per increment
-    adxl345_set_tap_duration( 15 );      //625\u03bcs per increment
-    adxl345_set_double_tap_latency( 80 ); //1.25ms per increment
-    adxl345_set_double_tap_window( 200 ); //1.25ms per increment
+    mikrobus_logWrite( " Axis Y :", _LOG_TEXT );
+    mikrobus_logWrite( txtY, _LOG_LINE );
 
-    //set values for what is considered freefall (0-255)
-    adxl345_set_free_fall_threshold( 7 ); //(5 - 9) recommended - 62.5mg per increment
-    adxl345_set_free_fall_duration( 15 ); //(20 - 70) recommended - 5ms per increment
+    mikrobus_logWrite( " Axis Z :", _LOG_TEXT );
+    mikrobus_logWrite( txtZ, _LOG_LINE );
 
-    //register interupt actions true == on; false == off
-    adxl345_enable_interrupt( ADXL345_INT_SINGLE_TAP, true );
-    adxl345_enable_interrupt( ADXL345_INT_DOUBLE_TAP, true );
-    adxl345_enable_interrupt( ADXL345_INT_FREE_FALL, true );
-    adxl345_enable_interrupt( ADXL345_INT_ACTIVITY, true );
-    adxl345_enable_interrupt( ADXL345_INT_INACTIVITY, true );
-    adxl345_enable_interrupt( ADXL345_INT_DATA_READY, true );
-    adxl345_enable_interrupt( ADXL345_INT_WATERMARK, true );
-    
-    adxl345_enable_measure( true );
-}
+    mikrobus_logWrite("----------------", _LOG_LINE);
 
-
-void main() 
-{
-    int16_t avg_accel[3];
-    adxl345_int_source_tsource = 0;
-    double avg_g_s[3];
-    char tmp_text[80];
-    int i;
-    
-    system_init();
-    
-    while( 1 )
-    {
-        int count = adxl345_get_fifo_count();
-        int16_t *ptr = test_accel;
-
-        for( i = 0; i < count; i++ )
-        {
-            adxl345_read_accelxyz( ptr );
-            ptr += 3;
-        }
-        
-        if( go_flag )
-        {
-            for( i = 0; i < 128 / 3; i++ )
-            {
-                sprinti( tmp_text, "X:%d Y:%d Z:%d\r\n", 
-                         test_accel[i], test_accel[i+1], test_accel[i+2] );
-                UART_Write_Text( tmp_text );
-            }
-            go_flag = false;
-        } 
-
-        ....
-        Delay_ms( 2500 );
-    }
+    Delay_ms( 5000 );
 }
 
 ```
 
-[//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 
-   [MikroElektronika]: <http://www.mikroe.com/>
-   [mikroe_logo]: <http://www.mikroe.com/img/designs/beta/logo_small.png>
-   [Accel click]: <http://www.mikroe.com/click/accel/>
-   [accel_image]: <http://www.mikroe.com/img/development-tools/accessory-boards/click/accel/accel_click_main.png>
-   [Accel Tutorial]: <http://learn.mikroe.com/>
-   [Package Manager]: <http://www.mikroe.com/package-manager/>
+
+The full application code, and ready to use projects can be found on our 
+[LibStock](https://libstock.mikroe.com/projects/view/371/accel-click) page.
+
+Other mikroE Libraries used in the example:
+
+- UART
+- Conversions
+
+**Additional notes and informations**
+
+Depending on the development board you are using, you may need 
+[USB UART click](http://shop.mikroe.com/usb-uart-click), 
+[USB UART 2 Click](http://shop.mikroe.com/usb-uart-2-click) or 
+[RS232 Click](http://shop.mikroe.com/rs232-click) to connect to your PC, for 
+development systems with no UART to USB interface available on the board. The 
+terminal available in all Mikroelektronika 
+[compilers](http://shop.mikroe.com/compilers), or any other terminal application 
+of your choice, can be used to read the message.
+
+---
+### Architectures Supported
+
+#### mikroC
+
+| STM | KIN | CEC | MSP | TIVA | PIC | PIC32 | DSPIC | AVR | FT90x |
+|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| x | x | x | x | x | x | x | x | x | x |
+
+#### mikroBasic
+
+| STM | KIN | CEC | MSP | TIVA | PIC | PIC32 | DSPIC | AVR | FT90x |
+|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| x | x | x | x | x | x | x | x | x | x |
+
+#### mikroPascal
+
+| STM | KIN | CEC | MSP | TIVA | PIC | PIC32 | DSPIC | AVR | FT90x |
+|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| x | x | x | x | x | x | x | x | x | x |
+
+---
+---

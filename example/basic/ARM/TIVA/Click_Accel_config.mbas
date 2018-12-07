@@ -1,0 +1,8 @@
+module Click_Accel_config
+
+include Click_Accel_types
+
+const
+    _ACCEL_I2C_CFG as uint32_t[1] = (_I2C_BITRATE_STANDARD_MODE)
+    
+end.

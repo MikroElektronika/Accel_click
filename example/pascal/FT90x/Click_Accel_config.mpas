@@ -1,0 +1,8 @@
+unit Click_Accel_config;
+
+uses Click_Accel_types;
+
+const
+    _ACCEL_I2C_CFG : array[2] of uint32_t = (_I2CM_SPEED_MODE_STANDARD, _I2CM_SWAP_DISABLE); 
+    
+end.
